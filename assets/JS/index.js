@@ -135,6 +135,9 @@ equalButton.addEventListener("click", () => {
   compute();
 });
 
+//end eventButtons
+
+//Keyboard support
 document.addEventListener("keydown", (event) => {
   if (event.key >= "0" && event.key <= "9") {
     appendNumber(event.key);
@@ -154,5 +157,4 @@ document.addEventListener("keydown", (event) => {
     updateDisplay();
   }
 });
-
-//end eventButtons
+//end Keyboard support
