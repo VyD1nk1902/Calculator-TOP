@@ -31,6 +31,8 @@ function operate(operation, a, b) {
       return Div(a, b);
     case "*":
       return Multiply(a, b);
+    case "/":
+      return Div(a, b);
     default:
       return;
   }
@@ -46,7 +48,7 @@ const chooseOperate = document.querySelectorAll(".data-operation");
 const previousOperandTextElement = document.querySelector(".previous-operand");
 const currentOperandTextElement = document.querySelector(".current-operand");
 const allClearButton = document.querySelector(".all-clear");
-const deleteButton = document.querySelector(".del-button");
+const delButton = document.querySelector(".del-button");
 const equalButton = document.querySelector(".data-equal");
 //end Variables
 
@@ -56,21 +58,19 @@ function updateDisplay() {
   currentOperandTextElement.innerText = currentOperand;
 }
 
-function appendNumber(button) {
-  const digit = button.innerText;
+function appendNumber(digit) {
   if (digit === "." && currentOperand.toString().includes(".")) return;
   currentOperand = currentOperand.toString() + digit.toString();
 }
 
-function chooseOperation(button) {
+function chooseOperation(op) {
   if (currentOperand === "0" || currentOperand === "") {
-    currentOperandTextElement.textContent = "0";
     return;
   }
   if (previousOperand !== "" && currentOperand !== "") {
     compute();
   }
-  operation = button.innerText;
+  operation = op;
   previousOperand = `${currentOperand} ${operation}`;
   currentOperand = "";
   updateDisplay();
@@ -93,17 +93,23 @@ function allClear() {
   currentOperand = "";
   previousOperand = "";
   operation = undefined;
+  updateDisplay();
 }
 
-function deleteNumber() {
-  currentOperand = currentOperand.slice(0, -1);
+function delNumber() {
+  if (currentOperand.length > 1) {
+    currentOperand = currentOperand.slice(0, -1);
+  } else {
+    currentOperand = "0";
+  }
+  updateDisplay();
 }
 //end functions
 
 //eventButton
 numberButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    appendNumber(button);
+    appendNumber(button.innerText);
     updateDisplay();
   });
 });
@@ -114,18 +120,39 @@ allClearButton.addEventListener("click", () => {
   currentOperandTextElement.textContent = "0";
 });
 
-deleteButton.addEventListener("click", () => {
-  deleteNumber();
+delButton.addEventListener("click", () => {
+  delNumber();
   updateDisplay();
 });
 
 chooseOperate.forEach((button) => {
   button.addEventListener("click", () => {
-    chooseOperation(button);
+    chooseOperation(button.innerText);
   });
 });
 
 equalButton.addEventListener("click", () => {
   compute();
 });
+
+document.addEventListener("keydown", (event) => {
+  if (event.key >= "0" && event.key <= "9") {
+    appendNumber(event.key);
+    updateDisplay();
+  } else if (["+", "-", "*", "/", "÷"].includes(event.key)) {
+    chooseOperation(event.key);
+  } else if (event.key === "Enter") {
+    if (previousOperand && currentOperand) {
+      compute();
+      updateDisplay();
+    }
+  } else if (event.key === "Backspace") {
+    delNumber();
+    updateDisplay();
+  } else if (event.key.toLowerCase() === "c") {
+    allClear();
+    updateDisplay();
+  }
+});
+
 //end eventButtons
